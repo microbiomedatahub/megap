@@ -1,5 +1,8 @@
 # megapのCWLtoolsを用いた実行方法
 
+https://github.com/users/satoshi0409/packages/container/package/megap%2Fmegap-for-cwl
+にあるコンテナイメージを.cwlファイルの内部でpullして使っている
+
 ## 1. MeGAPPre.shの実行
 ```
 $ cwltool docker-megappre.cwl docker-megappre.yml
@@ -104,7 +107,9 @@ $ ll 8tar20wh/
 ## 2. MeGAPTaxa.shの実行
 ```
 $ cwltool docker-megaptaxa.cwl docker-megaptaxa.yml
+```
 
 ## 3. MeGAPFunc.shの実行
 ```
 $ cwltool docker-megapdfunc.cwl docker-megapfunc.yml
+```
