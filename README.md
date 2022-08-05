@@ -1,11 +1,78 @@
-# megapのCWLtoolsを用いた実行方法
+# 目次
+1. 【参考】コンテナイメージ作成とGitHub Container registryへの登録
+2. CWLtool実行環境の構築方法
+3. megapのcwltoolを用いた実行方法
 
-https://github.com/users/satoshi0409/packages/container/package/megap%2Fmegap-for-cwl
-にあるコンテナイメージを.cwlファイルの内部でpullして使っている
+# 1. 【参考】コンテナイメージ作成とGitHub Container registryへの登録
+https://github.com/users/satoshi0409/packages/container/package/megap%2Fmegap-for-cwl 
+にあるGitHub Container registryに既に登録済みなので、__作成し直す場合以外は以下の操作は不要です。__
 
-## 1. MeGAPPre.shの実行
 ```
-$ cwltool docker-megappre.cwl docker-megappre.yml
+# Dockerfileと必要なスクリプトをgit cloneする
+$ git clone https://github.com/microbiomedatahub/megap.git
+Cloning into 'megap'...
+remote: Enumerating objects: 19, done.
+remote: Counting objects: 100% (19/19), done.
+remote: Compressing objects: 100% (19/19), done.
+remote: Total 19 (delta 4), reused 0 (delta 0), pack-reused 0
+Unpacking objects: 100% (19/19), done.
+$ cd megap && ls
+Dockerfile  Program  README.md
+# Dockerコンテナイメージの作成
+$ docker build -t megap .
+# パーソナルアクセストークンをghcr.txtに保存して、以下でGitHubアカウントにログインする
+$ cat ghcr.txt | docker login ghcr.io -u satoshi0409 --password-stdin
+WARNING! Your password will be stored unencrypted in /home/satoshi.tazawa/.docker/config.json.
+Configure a credential helper to remove this warning. See
+https://docs.docker.com/engine/reference/commandline/login/#credentials-store
+
+Login Succeeded
+$ docker images
+REPOSITORY   TAG       IMAGE ID       CREATED          SIZE
+megap        latest    af5dcf337682   16 minutes ago   651MB
+ubuntu       latest    df5de72bdb3b   3 days ago       77.8MB
+$ docker tag f66b51328fa4 ghcr.io/satoshi0409/megap/megap-for-cwl:latest
+$ docker images
+REPOSITORY                                TAG       IMAGE ID       CREATED          SIZE
+megap                                     latest    af5dcf337682   16 minutes ago   651MB
+ghcr.io/satoshi0409/megap/megap-for-cwl   latest    af5dcf337682   16 minutes ago   651MB
+ubuntu                                    latest    df5de72bdb3b   3 days ago       77.8MB
+$ docker push ghcr.io/satoshi0409/megap/megap-for-cwl:latest
+The push refers to repository [ghcr.io/satoshi0409/megap/megap-for-cwl]
+(略)
+```
+
+# 2. CWLtool実行環境の構築方法
+スパコン上で以下の手順で実行環境の構築を行った。
+```
+$ qlogin && ssh it048
+$ pip install virtualenv
+$ python -m virtualenv cwltoolenv
+$ . cwltoolenv/bin/activate
+(cwltoolenv) $ pip install --upgrade pip
+(cwltoolenv) $ pip install cwltool
+# dockerがスパコンにインストールされていない場合
+```
+__  (cwltoolenv) $ pip install docker __
+
+
+# 3. megapのCWLtoolを用いた実行方法
+例えばit048の/data1/megap-cwltool でテストを実施する手順を以下に示す。
+```
+$ mkdir -p /data1/megap-cwltool && cd /data1/megap-cwltool
+# テスト用のRaw, Referenceフォルダーをこのフォルダーにコピー
+```
+GitHub Container registryに登録済みのコンテナイメージを.cwlファイルの内部でpullして実行している。
+
+
+## A. MeGAPPre.shの実行
+にあるdocker-megappre.cwlファイルとdocker-megappre.ymlファイルのペアを作成する。<br>
+rawとReferenceフォルダーへのパスは実行環境に応じて適宜変更する。<br>
+実行時にデフォルトで使用される/tmpフォルダの容量が足りないと、解析途中で落ちてしまう。<br>
+この場合は空のフォルダー(例えばtmp1)を作成して--cachedirで指定すれば解決する。
+
+```
+(cwltoolenv)$ cwltool --cachedir tmp1 docker-megappre.cwl docker-megappre.yml
 INFO /home/satoshi.tazawa/.local/bin/cwltool 3.1.20220628170238
 INFO Resolved 'docker-megappre.cwl' to 'file:///home/satoshi.tazawa/NIG/2022/docker_pipelines/docker-megap/docker-megappre.cwl'
 INFO [job docker-megappre.cwl] /tmp/8tar20wh$ docker \
@@ -106,10 +173,10 @@ $ ll 8tar20wh/
 
 ## 2. MeGAPTaxa.shの実行
 ```
-$ cwltool docker-megaptaxa.cwl docker-megaptaxa.yml
+(cwltoolenv)$ cwltool docker-megaptaxa.cwl docker-megaptaxa.yml
 ```
 
 ## 3. MeGAPFunc.shの実行
 ```
-$ cwltool docker-megapdfunc.cwl docker-megapfunc.yml
+(cwltoolenv)$ cwltool docker-megapdfunc.cwl docker-megapfunc.yml
 ```
