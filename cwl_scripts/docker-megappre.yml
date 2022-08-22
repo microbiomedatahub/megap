@@ -1,0 +1,6 @@
+input_data_path:
+  class: Directory
+  path: /data1/megap-cwltool/raw/
+input_ref_path:
+  class: Directory
+  path: /data1/megap-cwltool/Reference/
