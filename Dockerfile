@@ -42,6 +42,8 @@ RUN wget https://github.com/bbuchfink/diamond/releases/download/v2.0.13/diamond-
 COPY ./Program/* /app/program/
 RUN chmod +x /app/program/*
 
+ENV PATH $PATH:/app/program/
+
 # step6 should be preprocessed
 # step7 can be achieved using -v(volume mount)
 # step8 is omitted
