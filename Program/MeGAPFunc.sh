@@ -1,15 +1,16 @@
-for i in /app/data/*.trim.fastq.fa;do
+#!/usr/bin/bash
+for input_path in $1/*.trim.fastq.fa;do
 PROGRAM=/app/program
-REF=/app/reference
-$PROGRAM/prodigal -i "$i" -a "$i".pt.fasta -p meta
-perl $PROGRAM/RemoveTooShort.pl "$i".pt.fasta
-rm "$i".pt.fasta.gff
-rm "$i".pt.fasta
-$PROGRAM/diamond blastp --sensitive --query "$i".pt.fasta.remshort --db $REF/prokaryotes.pep.uniq.diamond --out "$i".pt.fasta.remshort.tsv --outfmt 6
-perl $PROGRAM/ParseSingle.pl "$i".pt.fasta.remshort.tsv
-perl $PROGRAM/PileupKEGG.pl "$i".pt.fasta.remshort.tsv.parsed
-perl $PROGRAM/KEGGID2KOID.pl "$i".pt.fasta.remshort.tsv.parsed.keggid $REF/genes_ko.list
-rm "$i".pt.fasta.remshort.tsv
-rm "$i".pt.fasta.remshort.parsed.keggid
+REF=$2
+input_file=`basename $input_path`
+$PROGRAM/prodigal -i "$input_path" -a "$input_file".pt.fasta -p meta
+perl $PROGRAM/RemoveTooShort.pl "$input_file".pt.fasta
+rm "$input_file".pt.fasta
+$PROGRAM/diamond blastp --sensitive --query "$input_file".pt.fasta.remshort --db $REF/prokaryotes.pep.uniq.diamond --out "$input_file".pt.fasta.remshort.tsv --outfmt 6
+perl $PROGRAM/ParseSingle.pl "$input_file".pt.fasta.remshort.tsv
+perl $PROGRAM/PileupKEGG.pl "$input_file".pt.fasta.remshort.tsv.parsed
+perl $PROGRAM/KEGGID2KOID.pl "$input_file".pt.fasta.remshort.tsv.parsed.keggid $REF/genes_ko.list
+rm "$input_file".pt.fasta.remshort.tsv
+rm "$input_file".pt.fasta.remshort.tsv.parsed.keggid
 done
 
