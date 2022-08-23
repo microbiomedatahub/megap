@@ -190,7 +190,7 @@ drwxr-xr-x 11 tazawa-axio co-axiohelix       4096  8月 22 12:14 ..
 -rw-r--r--  1 tazawa-axio co-axiohelix      58451  8月 17 12:51 fastp.json
 ```
 
-## 2. MeGAPTaxa.shの実行
+## B. MeGAPTaxa.shの実行
 同様にdocker-megaptaxa.cwlとdocker-megaptaxa.ymlを作成する。<br>
 ```
 (cwltoolenv)$ mkdir tmp2
@@ -264,7 +264,7 @@ drwxr-xr-x 11 tazawa-axio co-axiohelix 4096  8月 22 12:14 ..
 -rw-r--r--  1 tazawa-axio co-axiohelix 3766  8月 17 18:25 ERR911975_1.fastq.sam.mapped.bam.sort.bam.fastq.trim.fastq.fa.mapseq.parsed.genus.m16s
 ```
 
-## 3. MeGAPFunc.shの実行
+## C. MeGAPFunc.shの実行
 同様にdocker-megapfunc.cwlとdocker-megapfunc.ymlを作成する。<br>
 ```
 (cwltoolenv)$ mkdir tmp3
